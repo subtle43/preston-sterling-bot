@@ -64,6 +64,20 @@ def about(name: str) -> str:
         return ""
 
 
+def flags(name: str | None = None) -> set[str]:
+    """Optional switches in flags.txt, one per line:
+
+        big_words   gets the weekly handful of precise words, and drunk mode keeps
+                    the "vocabulary goes up" rule (the classic engineer voice)
+        no_drunk    never rolls the drunk mood (for characters it doesn't fit)
+    """
+    try:
+        text = (PERSONAS / (name or active()) / "flags.txt").read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    return {line.strip().lower() for line in text.splitlines() if line.strip() and not line.startswith("#")}
+
+
 def song_styles(name: str | None = None) -> list[str]:
     """The persona's music genres (song_style.txt, one 'genre: description' per
     line). Empty means songs use the bot's random style list."""

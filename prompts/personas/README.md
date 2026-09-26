@@ -18,6 +18,7 @@ drunkard, freebaser, idiot.
 | `about.txt` | One short line shown in the `/persona` list and searched when typing (e.g. "drunk" finds drunkard). |
 | `song_style.txt` | Optional. Music genres for songs and raps, one "genre: description" per line (one is picked per song). Without it, songs use a random style. |
 | `image_style.txt` | Optional. The default look for pictures when the request names no style (e.g. noir = black-and-white film noir). Without it, photorealistic. |
+| `flags.txt` | Optional switches, one per line: `big_words` (gets the weekly list of precise words; for erudite characters only - a salesman given "thixotropic" will use it) and `no_drunk` (never plays the drunk mood). |
 
 ## The shared rules
 

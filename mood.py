@@ -334,8 +334,11 @@ def current_register(now: float | None = None, override: str = "auto") -> str:
     return REGISTER_NAMES[(year * 53 + week) % len(REGISTER_NAMES)]
 
 
-def pick_vocabulary(register: str, worn: set[str] | None = None, allow_verdict: bool = True) -> str:
-    """A fresh handful of words in this week's flavour, plus the sign-off rule."""
+def pick_vocabulary(register: str, worn: set[str] | None = None, allow_verdict: bool = True,
+                    words_on: bool = True) -> str:
+    """A fresh handful of words in this week's flavour, plus the sign-off rule.
+    `words_on=False` (a persona without the big_words flag) gives only the
+    sign-off rule: a salesman or a surfer handed "thixotropic" will use it."""
     pool = [w for w in REGISTERS.get(register, REGISTERS["science"]) if w not in (worn or ())]
     words = random.sample(pool, min(VOCAB_SAMPLE, len(pool)))
     flavour = {
@@ -359,6 +362,8 @@ def pick_vocabulary(register: str, worn: set[str] | None = None, allow_verdict: 
             "Do NOT end on a one-word verdict this time. No \"Elementary.\", no "
             "\"Trivial.\", no \"Obviously.\", no \"Next.\" End on the substance."
         )
+    if not words_on:
+        return ending
     return (
         f"This week {flavour}. If a precise word is the right word in this reply, "
         "these are available - they are here to stop you reaching for the same "

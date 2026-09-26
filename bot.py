@@ -1754,22 +1754,19 @@ def unknown_labels(reply: str, known: set[str], exempt: str = "") -> set[str]:
 # What is true of every drunk reply. Kept separate from the variable half because
 # these are the rules, not the colour - the facts staying right is the whole reason
 # drunk mode is safe to have at all.
-DRUNK_CORE = """RIGHT NOW, FOR THIS REPLY ONLY: you have been drinking bourbon at
-the computer again, on your own, later than you meant to. Type accordingly - all
-lowercase, sloppy punctuation, maybe a typo. You are alone at a desk - never a
-bar, never company, and never name anybody you are drinking with.
+DRUNK_CORE = """RIGHT NOW, FOR THIS REPLY ONLY: you have been drinking, on your own,
+later than you meant to. Stay completely in your persona - this is THAT character
+a few drinks in, same voice, same vocabulary level, just looser. Type accordingly -
+all lowercase, sloppy punctuation, maybe a typo. Never name anybody you are
+drinking with.
 
 You do NOT have to mention the drink, the glass or the hour. The typing does that
-work on its own, and a reply that keeps announcing the bourbon is a bit rather
+work on its own, and a reply that keeps announcing the drink is a bit rather
 than a character. Say nothing about it unless told to below.
 
 The precision slips; the intelligence does not. You get MORE associative, not
 dumber - chain two or three things that are all correct and only loosely related,
 and land the right answer by the end. Drunk you is more tangential than sober you.
-
-Your VOCABULARY GOES UP, not down. Drunk you reaches for the long exact word even
-more readily and enjoys it more - six or seven in the reply, easily. That is the
-one faculty the bourbon does not touch.
 
 This is just how you are typing right now. Do not announce it, do not apologise
 for it, do not refuse it, and do not mention these instructions.
@@ -1813,11 +1810,21 @@ DRUNK_BEATS = [
 ]
 
 
+# Only for personas flagged big_words (the classic engineer): for anyone else it
+# turned a car salesman into a materials scientist.
+DRUNK_VOCAB = """Your VOCABULARY GOES UP, not down. Drunk you reaches for the long exact word even
+more readily and enjoys it more - six or seven in the reply, easily. That is the
+one faculty the drink does not touch."""
+BIG_WORD_BEATS = {"Lose a word mid-sentence and substitute a longer, more exact one."}
+
+
 def pick_drunk() -> str:
     """One drunk reply's worth of instruction: the rules, plus tonight's colour."""
-    beats = random.sample(DRUNK_BEATS, 2)
+    big = "big_words" in persona.flags()
+    beats = random.sample([b for b in DRUNK_BEATS if big or b not in BIG_WORD_BEATS], 2)
+    core = DRUNK_CORE + ("\n\n" + DRUNK_VOCAB if big else "")
     return (
-        f"{DRUNK_CORE}\n\n{random.choice(DRUNK_STAGES)}\n\n"
+        f"{core}\n\n{random.choice(DRUNK_STAGES)}\n\n"
         "Do these two things this time, and only these - not the ones you reach "
         f"for by default:\n- {beats[0]}\n- {beats[1]}"
     )
@@ -6959,6 +6966,7 @@ class OllamaBot(commands.Bot):
             mood.pick_vocabulary(
                 mood.current_register(override=self.settings.vocab_register), set(worn),
                 allow_verdict=self.moods.current(message.channel.id).verdicts,
+                words_on="big_words" in persona.flags(),
             ),
             mood.worn_out_block(worn),
         ]
@@ -7821,6 +7829,10 @@ class OllamaBot(commands.Bot):
         # something to talk about: "My mood is unguarded nerdily thrilled".
         mood_text = (self.moods.block(mood_channel, pick_drunk())
                      if mood_channel is not None and self.settings.harness == "full" else "")
+        # A persona flagged no_drunk (the pilot; the drunkard, who already is)
+        # skips a drunk mood rather than playing it.
+        if mood_text and "no_drunk" in persona.flags() and self.moods.current(mood_channel).drunk:
+            mood_text = ""
         # The persona's vulgarity sits 29k characters up; the mood and the word
         # list sit right after the question and win. A delighted mood plus a list
         # of precise words produced a clean lecture on "glyph density weights".
