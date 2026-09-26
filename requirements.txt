@@ -1,0 +1,10 @@
+discord.py>=2.7.1,<3
+ollama>=0.5.1
+python-dotenv>=1.0.1
+av>=15.0.0
+numpy>=2.0
+pymupdf>=1.26
+matplotlib>=3.9  # log review charts (logchart.py)
+# GPU stack for local images (Z-Image) and songs (ACE-Step), installed by hand
+# in .venv rather than pinned here: torch 2.11 (cu128), diffusers>=0.40,
+# transformers, accelerate, gguf.
