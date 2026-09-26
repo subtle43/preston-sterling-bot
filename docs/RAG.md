@@ -1,8 +1,8 @@
 # Retrieval (RAG): building your own indexes
 
 Preston can look things up in three places. **None of them ship with this
-repository.** The chat archive is your community's private conversation, and the
-ECU documents are proprietary manufacturer files. You build each index yourself,
+repository.** The chat archive is your community's conversation and the documents
+are whatever you supply. You build each index yourself,
 it lives in `data/` (gitignored), and it never leaves your machine.
 
 | Index | Source | Built by | Searched by | Switch |

@@ -148,15 +148,11 @@ prompts/personas/       one folder per personality
 tests/                  intent and routing tests
 ```
 
-## What is deliberately not here
+## Bring your own data
 
-- **Secrets.** `.env` is gitignored. Only `.env.example`, with blank values, is committed.
-- **Chat data.** No messages, member lists, memory, lore or balances. Everything the
-  bot learns lives in `data/`, which is gitignored.
-- **Indexes and documents.** The Funktionsrahmen and A2L files are proprietary
-  manufacturer documents and are not included. Neither is any built index.
-- **The fine-tuning pipeline** used to train a model on one member's voice
-  (with their consent) is not included.
+Your keys go in your own `.env` (only the blank `.env.example` is in the repo).
+Everything the bot learns, and every index you build from your server's history
+or your own documents, stays in `data/` on your machine and is never committed.
 
 ## A note on the humour
 
