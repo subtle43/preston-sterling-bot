@@ -7855,7 +7855,16 @@ class OllamaBot(commands.Bot):
             ask = user_text.split("\n\n", 1)[0].strip()
             if ask:
                 ask = ask if len(ask) <= 400 else ask[:400].rsplit(" ", 1)[0] + " ..."
-                final_text += f"\n\n[NOW REPLY TO THIS MESSAGE - answer what it actually says:]\n{ask}"
+                # Stay on THEIR subject. Tuning expertise is who he is, not what every
+                # reply is about: "help me stay out of the permanent underclass" came
+                # back as rail pressure and lift pumps.
+                final_text += (
+                    "\n\n[NOW REPLY TO THIS MESSAGE - answer what it actually says, on its "
+                    "own subject. Bring up cars, tuning or ECUs ONLY if this message, or the "
+                    "conversation it is continuing, is about them. A question about money, "
+                    "life, food, games or anything else gets an answer about THAT, in your "
+                    f"persona's voice - no car metaphors, no tuning advice.]\n{ask}"
+                )
         messages = self.ollama.build_messages(base_system, history, final_text, images)
         use_think = self.settings.think if think is None else think
         log.info(
