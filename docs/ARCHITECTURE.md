@@ -1,7 +1,9 @@
 # Architecture
 
 How a Discord message turns into a reply, a picture, a song or a log review, and
-where each piece lives. The code is heavily commented with the *why* behind each
+where each piece lives. The core (routing, personas, memory, retrieval, media, gags,
+the economy) is topic-neutral. The car-tuning parts (datalog review, ECU document
+and A2L lookup) are separate modules that only run when used. The code is heavily commented with the *why* behind each
 decision (usually the bug that caused it), so this page is a map and the source is
 the territory.
 

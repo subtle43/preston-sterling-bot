@@ -1,19 +1,25 @@
-# Preston Sterling: a Discord bot for a car-tuning server
+# Preston Sterling: a personality-driven AI bot for any Discord server
 
-Preston is a Discord bot built for a Volkswagen/Audi ECU tuning community
-(SIMOS18, EA888, IS38 and friends). He answers tuning questions properly, reads
-datalogs, looks things up in the ECU documentation and the server's own chat
-history, draws pictures, writes and *sings* songs, runs a fake-money betting
-economy, and does all of it in whichever of 40+ swappable personalities the
-server has picked: a divorced shop dad, a film-noir detective, a pirate, a Bond
-villain, an 84-year-old ex-Bosch engineer grandma...
+Preston is an AI community bot for Discord. He answers questions properly, learns
+your server's history and its people, draws pictures, writes and *sings* songs
+about your members, runs a fake-money betting economy and a stack of gag
+commands, and does all of it in whichever of 40+ swappable personalities the
+server has picked: a film-noir detective, a pirate, a Bond villain, a sweet grandma,
+a divorced dad who overshares, a drill sergeant...
 
 The joke is always the delivery. The answer underneath is meant to be real.
 
+**It works for any community**: gaming, a hobby, a friend group, a fandom, a
+study server. The personalities, rules and expertise are plain text files you
+edit, not code. It was first built for a car-tuning server, so the example
+personas talk about cars and it ships optional tuning modules (datalog review,
+ECU documentation lookup). Switch those off, point the personas at your own topic,
+and it's your server's bot. See [Making it yours](#making-it-yours).
+
 > This repository is the code only. It ships **no** API keys, **no** chat
-> messages, **no** retrieval indexes and **no** ECU documentation. You bring your
-> own tokens, and you build your own indexes from your own server and your own
-> documents. [docs/RAG.md](docs/RAG.md) explains how.
+> messages, **no** retrieval indexes and **no** third-party documents. You bring
+> your own tokens, and you build your own indexes from your own server and your
+> own documents. [docs/RAG.md](docs/RAG.md) explains how.
 
 ---
 
@@ -21,15 +27,16 @@ The joke is always the delivery. The answer underneath is meant to be real.
 
 | Area | What Preston does |
 | --- | --- |
-| **Chat** | Replies when @mentioned, replied to, DMed, or via `/ask`. Keeps per-channel memory that folds into a running summary, remembers facts about people (`!remember`, `!car`), and has moods that change his delivery for an hour or two. |
-| **Personas** | 40+ personalities in plain text files under [`prompts/personas/`](prompts/personas/README.md). Anyone can switch with `/persona` (5-minute cooldown). Each persona can also set a music genre for its songs and a look for its pictures. |
-| **Tuning help** | Datalog review (attach a CSV): finds the pulls, checks boost, timing, knock, lambda and fuel against fixed limits, and posts a chart. Looks things up in an ECU Funktionsrahmen and A2L files if you index your own. |
-| **Server memory (RAG)** | Searches the server's whole chat history to answer "what did X say about Y" or "when did Z blow his turbo", and builds member profiles for roasts, songs and cards. |
-| **Pictures** | "draw ...", "make a meme of ...", "shittify this car" under a photo. Generated locally on your GPU (Z-Image Turbo through diffusers). |
-| **Songs** | "make a song about ..." writes lyrics from the server's history and sings them with a local ACE-Step model, with a generated album cover. |
-| **Gags** | `/dyno`, `/sue` (Tuning Court), `/race`, `/tierlist`, `/stock`, `/factcheck`, `/card`, `/wordle`, weekly awards and a daily rap about a random member. |
-| **Preston Bucks** | A fake-money economy: `/daily`, `/bet`, `/odds`, markets that the bookie opens on its own from chat, `/leaderboard`. |
+| **Chat** | Replies when @mentioned, replied to, DMed, or via `/ask`. Keeps per-channel memory that folds into a running summary, remembers facts about people (`!remember`), and has moods that change his delivery for an hour or two. |
+| **Personas** | 40+ personalities in plain text files under [`prompts/personas/`](prompts/personas/README.md). Anyone can switch with `/persona` (5-minute cooldown). Each persona can also set a music genre for its songs and a look for its pictures. Write your own in a few minutes. |
+| **Server memory (RAG)** | Searches the server's whole chat history to answer "what did X say about Y" or "when did Z happen", and builds member profiles for roasts, songs and cards. |
+| **Pictures** | "draw ...", "make a meme of ...", or an edit under a photo ("make it look terrible"). Generated locally on your GPU (Z-Image Turbo through diffusers). |
+| **Songs** | "make a song about @member" writes lyrics from the server's history and sings them with a local ACE-Step model, with a generated album cover. |
+| **Gags** | `/sue` (a mock trial), `/tierlist` (rank the regulars on anything), `/card` (member trading cards), `/stock`, `/factcheck`, `/race`, `/dyno`, `/wordle`, weekly awards and a daily rap roasting a random member. |
+| **Server economy** | A fake-money economy with the bot as a crooked bookie: `/daily`, `/bet`, `/odds`, markets it opens on its own from things people claim in chat, `/leaderboard`. |
+| **Document lookup (RAG)** | Index a reference document and the bot quotes it by name or plain-English question. Built for a technical manual; the extractor can be adapted to others. |
 | **Web search** | Optional, via Tavily. Results are treated as untrusted and links are stripped. |
+| **Optional: car tuning** | The modules it was born with: datalog review (attach a CSV: finds the pulls, checks boost, timing, knock and fuel, posts a chart), ECU documentation and A2L lookup, `!car`. Harmless if unused. |
 
 The full list is in [docs/COMMANDS.md](docs/COMMANDS.md).
 
@@ -82,6 +89,32 @@ Pictures and songs need a CUDA GPU (8 GB works) and a few extra packages.
 Retrieval needs `ollama pull bge-m3` for embeddings. Both are covered step by
 step in [docs/SETUP.md](docs/SETUP.md).
 
+## Making it yours
+
+Everything that makes Preston a *car* bot is text, not code. To make him the bot
+for your gaming clan, book club or friend group:
+
+1. **Give him your topic.** Open [`prompts/personas/_shared/rules.txt`](prompts/personas/_shared/rules.txt)
+   and rewrite the "WHAT YOU ACTUALLY KNOW" section with your community's subject:
+   Valorant, sourdough, Warhammer, anything. Each persona's opening lines also say
+   what he does for a living ("a SIMOS18 tuner"); a find-and-replace across
+   `prompts/personas/` changes it everywhere.
+2. **Pick or write personalities.** Copy any persona folder and rewrite three short
+   text files. See the [persona guide](prompts/personas/README.md). Switch live with
+   `/persona`; no restart, no code.
+3. **Teach him your server.** Scrape and index your own chat history
+   ([docs/RAG.md](docs/RAG.md)) and he learns who's who, the running jokes and the
+   old arguments. That's what makes the roasts, songs, trading cards and trials
+   personal.
+4. **Add your reference material (optional).** The document-lookup pipeline (chunk,
+   embed with `bge-m3`, search with a relevance gate) is generic. Its PDF extractor
+   (`frextract.py`) is written for one ECU manual's page layout, so for a rulebook,
+   a wiki export or a manual you'd adapt that one file to your document.
+5. **Leave the car bits off.** Document lookup is off by default, and log review
+   only runs when someone attaches a datalog. A few gags are car-flavoured (`/dyno`,
+   `/race`, the horsepower `/stock`); they still work as jokes, or you can delete
+   them from `bot.py`.
+
 ## Documentation
 
 | Doc | What's in it |
@@ -104,8 +137,8 @@ intent.py               what a message wants (picture, song, question...)
 memory.py  lore.py      channel memory + summaries; facts about members
 mood.py  feedback.py    moods; which reply shapes the room reacts to
 chatsearch.py           retrieval over the server's chat history
-frsearch.py  frparse.py  a2lparse.py   retrieval over ECU documentation
-logtrack.py  logpulls.py  logchart.py  datalog review and charts
+frsearch.py  frparse.py  a2lparse.py   retrieval over reference documents (built for ECU docs)
+logtrack.py  logpulls.py  logchart.py  datalog review and charts (car tuning, optional)
 imagegen.py  localimage.py  songgen.py  pictures and songs
 bucks.py  gags.py  dynochart.py  wordleplay.py   the economy and the gag commands
 websearch.py            Tavily web search
